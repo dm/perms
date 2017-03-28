@@ -170,7 +170,7 @@ or even
 }
 ```
 
-Pconfs can stack up. If multiple pconfs provide `users` over and over again, the internal user state will be appended to. If multiple pconfs declare the same user or group, only the last one will be used.
+If multiple pconfs provide `users` over and over again, the internal user state will be appended to. If multiple pconfs declare the same user or group, only the last one will be used.
 
 Groups do not have to be explicitely created to be referenced. 
 
