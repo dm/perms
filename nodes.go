@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"database/sql/driver"
 	"encoding/json"
+	"strings"
 
 	"github.com/stratexio/sqltypes"
 
@@ -78,7 +79,7 @@ func (ns Nodes) String() string {
 	for k, n := range ns {
 		buf.WriteString(n.String())
 		if k != (len(ns) - 1) {
-			buf.WriteByte(' ')
+			buf.WriteByte('\n')
 		}
 	}
 	return buf.String()
@@ -109,7 +110,7 @@ func (ns *Nodes) Scan(value interface{}) error {
 
 	input = bytes.Replace(input, []byte("\\n"), []byte("\n"), -1)
 
-	nn, err := ParseNodes(input)
+	nn, err := ParseNodes(bytes.NewReader(input))
 	if err != nil {
 		return err
 	}
@@ -135,7 +136,7 @@ func (ns Nodes) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	nodes, err := ParseNodes([]byte(data))
+	nodes, err := ParseNodes(strings.NewReader(data))
 	if err != nil {
 		return err
 	}
