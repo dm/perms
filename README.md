@@ -170,12 +170,8 @@ or even
 }
 ```
 
-Pconfs can stack up. If multiple pconfs provide `users` over and over again, the loaded users 
-will __not__ be overwritten. If multiple pconfs declare the same user or group, it will be overwritten.
-Users and groups must be explicitely deleted.
+Pconfs can stack up. If multiple pconfs provide `users` over and over again, the internal user state will be appended to. If multiple pconfs declare the same user or group, only the last one will be used.
 
-If a group is mention that does not exist, parising will not fail. A new group with no permissions will be created instead.
+Groups do not have to be explicitely created to be referenced. 
 
-The order in which PConfs are provided to the web is important as well
-
-Note that the `default` group will be inherited by all users.
+The `default` group will be inherited by all users.
