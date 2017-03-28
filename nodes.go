@@ -7,6 +7,8 @@ import (
 
 	"github.com/stratexio/sqltypes"
 
+	"io"
+
 	"github.com/stratexio/perms/whitespace"
 )
 
@@ -14,8 +16,7 @@ import (
 type Nodes []Node
 
 //ParseNodes parses a whitespace delimited list of nodes
-func ParseNodes(raw []byte) (Nodes, error) {
-	bufReader := bytes.NewReader(raw)
+func ParseNodes(rd io.RuneReader) (Nodes, error) {
 	nodes := make(Nodes, 0, 10)
 	lastNodeText := new(bytes.Buffer)
 
@@ -32,7 +33,7 @@ func ParseNodes(raw []byte) (Nodes, error) {
 	}
 
 	for {
-		r, _, err := bufReader.ReadRune()
+		r, _, err := rd.ReadRune()
 		if err != nil {
 			return nodes, flush()
 		}
@@ -47,8 +48,8 @@ func ParseNodes(raw []byte) (Nodes, error) {
 }
 
 //MustParseNodes parses raw or panics
-func MustParseNodes(raw []byte) Nodes {
-	n, err := ParseNodes(raw)
+func MustParseNodes(rd io.RuneReader) Nodes {
+	n, err := ParseNodes(rd)
 	if err != nil {
 		panic(err)
 	}

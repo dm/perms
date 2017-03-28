@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -110,12 +111,12 @@ func TestWeb_MasterPConf(t *testing.T) {
 
 	web.AddGroup(&Group{
 		Name:  "admin",
-		Nodes: MustParseNodes([]byte("testing.create testing.poop testing.weewee")),
+		Nodes: MustParseNodes(strings.NewReader("testing.create testing.poop testing.weewee")),
 	})
 
 	web.AddUser(&User{
 		Name:  "ahmad",
-		Nodes: MustParseNodes([]byte("ammar.edit ammar.poo ammar.pee")),
+		Nodes: MustParseNodes(strings.NewReader("ammar.edit ammar.poo ammar.pee")),
 	})
 
 	raw, err := web.MasterPConf().PrettyMarshal()
@@ -135,7 +136,7 @@ func TestWeb_JSON(t *testing.T) {
 		w.AddUser(&User{
 			Name:   "ammar",
 			Groups: []string{"slave", "coder"},
-			Nodes:  MustParseNodes([]byte("everything.* -nothing")),
+			Nodes:  MustParseNodes(strings.NewReader("everything.* -nothing")),
 		})
 		js, err := w.MarshalJSON()
 		if err != nil {
