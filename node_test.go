@@ -15,9 +15,9 @@ func TestParseNode(t *testing.T) {
 		want    Node
 		wantErr bool
 	}{
-		{"simple", args{"projects.manage"}, Node{Namespaces: []string{"projects", "manage"}}, false},
-		{"simple", args{"projects.manage.*"}, Node{Namespaces: []string{"projects", "manage", "*"}}, false},
-		{"negate", args{"-projects.manage.*"}, Node{Namespaces: []string{"projects", "manage", "*"}, Negate: true}, false},
+		{"simple", args{"projects.manage"}, Node{Parts: []string{"projects", "manage"}}, false},
+		{"simple", args{"projects.manage.*"}, Node{Parts: []string{"projects", "manage", "*"}}, false},
+		{"negate", args{"-projects.manage.*"}, Node{Parts: []string{"projects", "manage", "*"}, Negate: true}, false},
 		{"whitespace", args{"- projects.manage.*"}, Node{}, true},
 		{"empty", args{"..*"}, Node{}, true},
 		{"empty", args{""}, Node{}, true},
@@ -54,17 +54,17 @@ func TestNode_Match(t *testing.T) {
 		args args
 		want bool
 	}{
-		{"simple", Node{Namespaces: []string{"projects", "webserver"}}, args{Node{Namespaces: []string{"projects", "webserver"}}}, true},
-		{"simple", Node{Namespaces: []string{"projects", "webserver"}}, args{Node{Namespaces: []string{"projects", "frontend"}}}, false},
+		{"simple", Node{Parts: []string{"projects", "webserver"}}, args{Node{Parts: []string{"projects", "webserver"}}}, true},
+		{"simple", Node{Parts: []string{"projects", "webserver"}}, args{Node{Parts: []string{"projects", "frontend"}}}, false},
 
-		{"wildcard", Node{Namespaces: []string{"projects", "*"}}, args{Node{Namespaces: []string{"projects", "frontend"}}}, true},
-		{"wildcard", Node{Namespaces: []string{"projects", "*"}}, args{Node{Namespaces: []string{"billing", "frontend"}}}, false},
+		{"wildcard", Node{Parts: []string{"projects", "*"}}, args{Node{Parts: []string{"projects", "frontend"}}}, true},
+		{"wildcard", Node{Parts: []string{"projects", "*"}}, args{Node{Parts: []string{"billing", "frontend"}}}, false},
 
-		{"middle_wildcard", Node{Namespaces: []string{"projects", "*", "chat"}}, args{Node{Namespaces: []string{"projects", "test"}}}, false},
-		{"middle_wildcard", Node{Namespaces: []string{"projects", "*", "chat"}}, args{Node{Namespaces: []string{"projects", "test", "test"}}}, false},
-		{"middle_wildcard", Node{Namespaces: []string{"projects", "*", "chat"}}, args{Node{Namespaces: []string{"projects", "test", "chat"}}}, true},
+		{"middle_wildcard", Node{Parts: []string{"projects", "*", "chat"}}, args{Node{Parts: []string{"projects", "test"}}}, false},
+		{"middle_wildcard", Node{Parts: []string{"projects", "*", "chat"}}, args{Node{Parts: []string{"projects", "test", "test"}}}, false},
+		{"middle_wildcard", Node{Parts: []string{"projects", "*", "chat"}}, args{Node{Parts: []string{"projects", "test", "chat"}}}, true},
 
-		{"supernode", Node{Namespaces: []string{"*"}}, args{Node{Namespaces: []string{"projects", "test", "chat"}}}, true},
+		{"supernode", Node{Parts: []string{"*"}}, args{Node{Parts: []string{"projects", "test", "chat"}}}, true},
 	}
 
 	for _, tt := range tests {
@@ -119,8 +119,8 @@ func TestNode_String(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := Node{
-				Namespaces: tt.fields.Namespaces,
-				Negate:     tt.fields.Negate,
+				Parts:  tt.fields.Namespaces,
+				Negate: tt.fields.Negate,
 			}
 			if got := n.String(); got != tt.want {
 				t.Errorf("Node.String() = %v, want %v", got, tt.want)

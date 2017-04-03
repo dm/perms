@@ -8,8 +8,8 @@ import (
 	"github.com/stratexio/perms/whitespace"
 )
 
-//NamespaceSeperator seperates node namespaces
-const NamespaceSeperator = "."
+//PartSeperator seperates node namespaces
+const PartSeperator = "."
 
 //WildcardSelector matches any namespace
 const WildcardSelector = "*"
@@ -25,8 +25,8 @@ var (
 
 //Node contains a single permission node
 type Node struct {
-	Namespaces []string
-	Negate     bool
+	Parts  []string
+	Negate bool
 }
 
 //ParseNode parses a permission node
@@ -34,7 +34,7 @@ func ParseNode(raw string) (Node, error) {
 	if whitespace.Contains(raw) {
 		return Node{}, ErrWhitespace
 	}
-	tokens := strings.Split(raw, NamespaceSeperator)
+	tokens := strings.Split(raw, PartSeperator)
 
 	if len(tokens) == 0 {
 		return Node{}, ErrEmptyString
@@ -52,8 +52,8 @@ func ParseNode(raw string) (Node, error) {
 	}
 
 	return Node{
-		Namespaces: tokens,
-		Negate:     negate,
+		Parts:  tokens,
+		Negate: negate,
 	}, nil
 }
 
@@ -71,24 +71,24 @@ func MustParseNode(raw string) Node {
 func (n Node) Match(check Node) bool {
 	var lastWildcard bool
 
-	for i, namespace := range check.Namespaces {
-		if len(n.Namespaces) == i {
+	for i, namespace := range check.Parts {
+		if len(n.Parts) == i {
 			return lastWildcard
 		}
 
-		if n.Namespaces[i] == WildcardSelector {
+		if n.Parts[i] == WildcardSelector {
 			lastWildcard = true
 			continue
 		} else {
 			lastWildcard = false
 		}
 
-		if namespace != n.Namespaces[i] {
+		if namespace != n.Parts[i] {
 			return false
 		}
 	}
 
-	return !(len(check.Namespaces) < len(n.Namespaces))
+	return !(len(check.Parts) < len(n.Parts))
 }
 
 //String returns the string representation of the node
@@ -97,9 +97,9 @@ func (n Node) String() string {
 	if n.Negate {
 		buf.WriteByte('-')
 	}
-	for i, namespace := range n.Namespaces {
+	for i, namespace := range n.Parts {
 		buf.WriteString(namespace)
-		if i != (len(n.Namespaces) - 1) {
+		if i != (len(n.Parts) - 1) {
 			buf.WriteByte('.')
 		}
 	}
