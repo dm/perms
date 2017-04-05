@@ -30,17 +30,9 @@ func TestParseNode(t *testing.T) {
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ParseNode() = %v, want %v", got, tt.want)
+				t.Errorf("ParseNode() = %+v, want %+v", got, tt.want)
 			}
 		})
-	}
-}
-
-func BenchmarkParseNode(b *testing.B) {
-	permString := "projects.webserver.use"
-
-	for i := 0; i < b.N; i++ {
-		ParseNode(permString)
 	}
 }
 
@@ -76,32 +68,6 @@ func TestNode_Match(t *testing.T) {
 	}
 }
 
-func BenchmarkNode_Match(b *testing.B) {
-	b.Run("simple", func(b *testing.B) {
-		node := MustParseNode("projects.backend.use")
-		b.ResetTimer()
-		for i := 0; i < b.N; i++ {
-			node.Match(node)
-		}
-	})
-	b.Run("wildcard", func(b *testing.B) {
-		node := MustParseNode("*")
-		checkNode := MustParseNode("projects.backend.use")
-		b.ResetTimer()
-		for i := 0; i < b.N; i++ {
-			node.Match(checkNode)
-		}
-	})
-	b.Run("middle_wildcard", func(b *testing.B) {
-		node := MustParseNode("projects.*.use")
-		checkNode := MustParseNode("projects.backend.use")
-		b.ResetTimer()
-		for i := 0; i < b.N; i++ {
-			node.Match(checkNode)
-		}
-	})
-}
-
 func TestNode_String(t *testing.T) {
 	type fields struct {
 		Namespaces []string
@@ -126,14 +92,5 @@ func TestNode_String(t *testing.T) {
 				t.Errorf("Node.String() = %v, want %v", got, tt.want)
 			}
 		})
-	}
-}
-
-func BenchmarkNode_String(b *testing.B) {
-	node := MustParseNode("-billing.credit_cards.view")
-	b.ResetTimer()
-	b.ReportAllocs()
-	for i := 0; i < b.N; i++ {
-		node.String()
 	}
 }
